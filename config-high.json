@@ -1,0 +1,39 @@
+{
+  "settings": {
+    "name": "Japan High Detail",
+    "version": "1.0",
+    "description": "High detail map for prefectures.",
+    "attribution": "OpenStreetMap Contributors",
+
+    "minzoom": 0,
+    "maxzoom": 15,
+    "basezoom": 15,
+
+    "compress": "gzip",
+    "include_ids": true
+  },
+  "layers": {
+    "building": { "minzoom": 14, "maxzoom": 15 },
+    "landuse": { "minzoom": 8, "maxzoom": 15 },
+    "landcover": { "minzoom": 8, "maxzoom": 15 },
+    "place": { "minzoom": 0, "maxzoom": 15 },
+    "poi": { "minzoom": 12, "maxzoom": 15 },
+    "poi_detail": { "minzoom": 15, "maxzoom": 15 },
+    "mountain_peak": { "minzoom": 13, "maxzoom": 15 },
+    "housenumber": { "minzoom": 15, "maxzoom": 15 },
+    "transportation": { "minzoom": 5, "maxzoom": 15 },
+    "transportation_name": { "minzoom": 12, "maxzoom": 15 },
+    "water": { "minzoom": 4, "maxzoom": 15 },
+    "water_name_detail": { "minzoom": 14, "maxzoom": 15 },
+    "waterway": { "minzoom": 13, "maxzoom": 15 },
+    "water_name": { "minzoom": 12, "maxzoom": 15 },
+    "waterway_detail": { "minzoom": 15, "maxzoom": 15 },
+    "aeroway": { "minzoom": 11, "maxzoom": 15 },
+    "aerodrome_label": { "minzoom": 12, "maxzoom": 15 },
+    "boundary": { "minzoom": 8, "maxzoom": 15 },
+    "park": { "minzoom": 11, "maxzoom": 15 },
+    "bridge": { "minzoom": 13, "maxzoom": 15 },
+    "tunnel": { "minzoom": 13, "maxzoom": 15 }
+  }
+}
+

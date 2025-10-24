@@ -1,0 +1,20 @@
+{
+  "settings": {
+    "name": "Japan Ultra Light",
+    "version": "1.0",
+    "description": "A minimal, low-zoom basemap of Japan for app bundling.",
+    "attribution": "OpenStreetMap Contributors",
+
+    "minzoom": 0,
+    "maxzoom": 6,
+    "basezoom": 6,
+
+    "compress": "gzip",
+    "include_ids": false,
+    "simplify_level": 5
+  },
+  "layers": {
+    "water": { "minzoom": 0, "maxzoom": 6 },
+    "place": { "minzoom": 4, "maxzoom": 6 }
+  }
+}
