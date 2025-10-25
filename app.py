@@ -1,15 +1,13 @@
-# create_polys.py (修正版)
+# create_polys.py
 import geopandas as gpd
 import os
 
-# --- 設定項目 (以前と同じ) ---
+# 設定項目
 GEOJSON_FILE = 'japan.geojson'
 OUTPUT_DIR = 'poly_files'
 BUFFER_METERS = 1000
 PREF_NAME_PROPERTY = 'nam_ja'
 PREF_CODE_PROPERTY = 'id'
-
-# --- スクリプト本体 (修正済み) ---
 def create_poly_files():
     print(f"🌍 GeoJSONファイル '{GEOJSON_FILE}' を読み込みます...")
     if not os.path.exists(GEOJSON_FILE):
@@ -37,8 +35,7 @@ def create_poly_files():
         geom_buffered = geom_projected.buffer(BUFFER_METERS)
         geom_final = gpd.GeoSeries([geom_buffered], crs=projected_crs).to_crs(geographic_crs).iloc[0]
 
-        # ▼▼▼▼▼ ここからが修正箇所 ▼▼▼▼▼
-
+        # ポリゴンタイプに応じて処理
         if geom_final.geom_type == 'Polygon':
             polygons = [geom_final]
         elif geom_final.geom_type == 'MultiPolygon':
@@ -67,8 +64,6 @@ def create_poly_files():
             poly_content += "END\n"
             part_counter += 1
         poly_content += "END\n"
-
-        # ▲▲▲▲▲ ここまでが修正箇所 ▲▲▲▲▲
 
         output_filename = os.path.join(OUTPUT_DIR, f"{file_basename}.poly")
         with open(output_filename, 'w', encoding='utf-8') as f:

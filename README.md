@@ -19,24 +19,8 @@ It generates two types of vector tiles from OpenStreetMap data:
 
 ## Workflow
 
-Run the scripts in the following order:
-
-### 1. Generate Polygon Files
-This script (`app.py`) reads `japan.geojson` and generates the necessary boundary files (`.poly`) in the `poly_files/` directory.
-
-```bash
-python app.py
-```
-
-### 2. Split PBF by Prefecture
-This script (split_japan.sh) uses osmium-tool and the poly_files/ to split japan-latest.osm.pbf into per-prefecture PBFs (e.g., 10_群馬県.osm.pbf). The results are saved in output_pbf/.
-
-```bash
-./split_japan.sh
-```
-
-### 3. Generate Low-Detail Base Map
-This is a manual Docker command to create the single, app-bundle-friendly base map (e.g., japan-low.mbtiles).
+### Low-Resolution Base Map
+Create a single, app-bundle-friendly base map using Docker command:
 
 ```bash
 sudo docker run -e LANG=C.UTF-8 -v "$(pwd)":/data tilemaker \
@@ -47,8 +31,27 @@ sudo docker run -e LANG=C.UTF-8 -v "$(pwd)":/data tilemaker \
   --threads=1
 ```
 
-### 4. Generate High-Detail Prefecture Maps
-This script (generate_splitdata.sh) loops through all PBFs in output_pbf/ and generates the high-detail tiles. The results are saved in output_mbtiles/ with numeric filenames (e.g., 1.mbtiles, 10.mbtiles).
+### High-Resolution Prefecture Maps
+Run the scripts in the following order:
+
+#### 1. Generate Polygon Files
+This script (`app.py`) reads `japan.geojson` and generates the necessary boundary files (`.poly`) in the `poly_files/` directory.
+
+```bash
+python app.py
+```
+
+**Configuration:** You can modify the overlap buffer in `app.py` by changing the `BUFFER_METERS` variable (default: 1000 meters).
+
+#### 2. Split PBF by Prefecture
+This script (`split_japan.sh`) uses osmium-tool and the poly_files/ to split japan-latest.osm.pbf into per-prefecture PBFs (e.g., 10_群馬県.osm.pbf). The results are saved in `output_pbf/`.
+
+```bash
+./split_japan.sh
+```
+
+#### 3. Generate High-Detail Prefecture Maps
+This script (`generate_splitdata.sh`) loops through all PBFs in `output_pbf/` and generates the high-detail tiles. The results are saved in `output_mbtiles/` with Japanese filenames (e.g., 10_群馬県.mbtiles).
 
 ```bash
 ./generate_splitdata.sh
