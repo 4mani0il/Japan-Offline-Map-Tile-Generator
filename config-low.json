@@ -1,17 +1,20 @@
 {
-	"layers": {
-		"water": { "minzoom": 0, "maxzoom": 10, "simplify_below": 8, "simplify_level": 0.5, "simplify_algorithm": "visvalingam" },
-		"place": { "minzoom": 0, "maxzoom": 10, "simplify_below": 8, "simplify_level": 0.3, "simplify_algorithm": "visvalingam" }
-	},
-	"settings": {
-		"minzoom": 0,
-		"maxzoom": 10,
-		"basezoom": 10,
-		"include_ids": false,
-		"name": "Japan Low Detail Map",
-		"version": "1.0",
-		"description": "Low detail map of Japan optimized for minimal file size",
-		"compress": "gzip",
-		"bounds": [122.0, 24.0, 146.0, 46.0]
-	}
+    "layers": {
+        "water": { "minzoom": 0, "maxzoom": 12, "simplify_below": 6, "simplify_level": 1.2, "simplify_algorithm": "visvalingam" },
+        "landcover": { "minzoom": 7, "maxzoom": 12, "simplify_below": 7, "simplify_level": 1.0, "simplify_algorithm": "visvalingam" },
+        "boundary": { "minzoom": 2, "maxzoom": 12, "simplify_below": 6, "simplify_level": 1.0, "simplify_algorithm": "visvalingam" },
+        "transportation": { "minzoom": 2, "maxzoom": 12, "simplify_below": 6, "simplify_level": 0.9, "simplify_algorithm": "visvalingam" },
+        "place": { "minzoom": 0, "maxzoom": 12, "simplify_below": 6, "simplify_level": 0.6, "simplify_algorithm": "visvalingam" }
+    },
+    "settings": {
+        "minzoom": 0,
+        "maxzoom": 12,
+        "basezoom": 12,
+        "include_ids": false,
+        "name": "Japan Low Detail Map (Z0-12)",
+        "version": "1.1",
+        "description": "Optimized map of Japan up to z12",
+        "compress": "gzip",
+        "bounds": [122.0, 24.0, 146.0, 46.0]
+    }
 }

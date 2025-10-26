@@ -39,6 +39,10 @@ ZRES10 = 152.9
 ZRES11 = 76.4
 ZRES12 = 38.2
 ZRES13 = 19.1
+ZRES14 = 9.55
+ZRES15 = 4.775
+ZRES16 = 2.3875
+ZRES17 = 1.19375
 
 -- The height of one floor, in meters
 BUILDING_FLOOR_HEIGHT = 3.66
@@ -627,6 +631,18 @@ function way_function()
 		Attribute("class", waterway)
 		SetNameAttributes()
 		SetBrunnelAttributes()
+		
+		-- Add width attribute for styling
+		local width = tonumber(Find("width"))
+		if width then
+			AttributeNumeric("width", width)
+		end
+		
+		-- Add depth attribute if available
+		local depth = tonumber(Find("depth"))
+		if depth then
+			AttributeNumeric("depth", depth)
+		end
 	elseif waterway == "boatyard"  then Layer("landuse", is_closed); Attribute("class", "industrial"); MinZoom(12)
 	elseif waterway == "dam"       then Layer("building",is_closed)
 	elseif waterway == "fuel"      then Layer("landuse", is_closed); Attribute("class", "industrial"); MinZoom(14)
@@ -646,7 +662,35 @@ function way_function()
 	-- Set 'building' and associated
 	if building~="" then
 		Layer("building", true)
+		Attribute("building", building)  -- building type (apartments, house, industrial, etc.)
 		SetBuildingHeightAttributes()
+		
+		-- Add building usage if available
+		local building_use = Find("building:use")
+		if building_use ~= "" then
+			Attribute("use", building_use)
+		end
+		
+		-- Add building material
+		local material = Find("material")
+		if material ~= "" then
+			Attribute("material", material)
+		end
+		
+		-- Add roof information
+		local roof_shape = Find("roof:shape")
+		if roof_shape ~= "" then
+			Attribute("roof:shape", roof_shape)
+		end
+		
+		-- Add address if available
+		if Holds("addr:street") then
+			Attribute("addr:street", Find("addr:street"))
+		end
+		if Holds("addr:postcode") then
+			Attribute("addr:postcode", Find("addr:postcode"))
+		end
+		
 		SetMinZoomByArea()
 	end
 
@@ -666,6 +710,13 @@ function way_function()
 		Attribute("class",class)
 
 		if Find("intermittent")=="yes" then Attribute("intermittent",1) end
+		
+		-- Add depth for water bodies
+		local depth = tonumber(Find("depth"))
+		if depth then
+			AttributeNumeric("depth", depth)
+		end
+		
 		-- we only want to show the names of actual lakes not every man-made basin that probably doesn't even have a name other than "basin"
 		-- examples for which we don't want to show a name:
 		--  https://www.openstreetmap.org/way/25958687
@@ -717,6 +768,99 @@ function way_function()
 	-- POIs ('poi' and 'poi_detail')
 	local rank, class, subclass = GetPOIRank()
 	if rank then WritePOI(class,subclass,rank); return end
+
+	-- Contour lines (elevation lines)
+	if Find("contour") == "elevation" or Find("contour") == "interval" then
+		local ele = tonumber(Find("ele"))
+		if ele then
+			Layer("contour", false)
+			AttributeNumeric("ele", ele)
+			MinZoom(12)
+			-- Thicker lines for index contours (every 100m)
+			if ele % 100 == 0 then
+				Attribute("type", "index")
+			else
+				Attribute("type", "interval")
+			end
+		end
+	end
+	
+	-- Landform features
+	local natural_detail = Find("natural")
+	if natural_detail == "cliff" or natural_detail == "ridge" or natural_detail == "saddle" or natural_detail == "valley" or natural_detail == "gully" or natural_detail == "crevasse" or natural_detail == "sinkhole" then
+		Layer("landform", false)
+		Attribute("class", natural_detail)
+		SetNameAttributes()
+		SetEleAttributes()
+		MinZoom(11)
+	end
+	
+	-- Shop/Commercial areas
+	local shop = Find("shop")
+	if shop ~= "" then
+		Layer("shop", true)
+		Attribute("class", shop)
+		SetNameAttributes()
+		MinZoom(14)
+	end
+	
+	-- Amenities (facilities)
+	local amenity = Find("amenity")
+	if amenity ~= "" then
+		Layer("amenity", true)
+		Attribute("class", amenity)
+		SetNameAttributes()
+		MinZoom(13)
+	end
+	
+	-- Railway infrastructure
+	if railway ~= "" then
+		if railway == "rail" or railway == "light_rail" or railway == "monorail" or railway == "tram" or railway == "subway" then
+			Layer("railway", false)
+			Attribute("class", railway)
+			MinZoom(9)
+			SetNameAttributes()
+		end
+	end
+	
+	-- Cableways (already partially handled but adding explicit layer)
+	if aerialway ~= "" and aerialway ~= "aerialway" then
+		Layer("cableway", false)
+		Attribute("class", aerialway)
+		MinZoom(13)
+		SetNameAttributes()
+	end
+	
+	-- Power infrastructure
+	local power = Find("power")
+	if power ~= "" then
+		Layer("power", false)
+		Attribute("class", power)
+		SetNameAttributes()
+		MinZoom(14)
+	end
+	
+	-- Terrain types (additional terrain features)
+	if natural ~= "" then
+		local terrain_type = natural
+		if natural == "bare_rock" or natural == "scree" or natural == "rock" or natural == "stone" then
+			Layer("terrain", false)
+			Attribute("class", "rock")
+			MinZoom(11)
+		elseif natural == "beach" or natural == "sand" or natural == "dune" then
+			Layer("terrain", false)
+			Attribute("class", "sand")
+			MinZoom(11)
+		elseif natural == "wetland" or natural == "marsh" or natural == "swamp" then
+			Layer("terrain", false)
+			Attribute("class", "wetland")
+			MinZoom(11)
+		elseif natural == "glacier" or natural == "ice" then
+			Layer("terrain", false)
+			Attribute("class", "ice")
+			MinZoom(11)
+		end
+	end
 
 	-- Catch-all
 	if (building~="" or write_name) and Holds("name") then
@@ -834,7 +978,11 @@ function SetMinZoomByAreaWithLimit(minzoom)
 	elseif minzoom <= 11 and area>ZRES10^2 then MinZoom(11)
 	elseif minzoom <= 12 and area>ZRES11^2 then MinZoom(12)
 	elseif minzoom <= 13 and area>ZRES12^2 then MinZoom(13)
-	else                      MinZoom(14) end
+	elseif minzoom <= 14 and area>ZRES13^2 then MinZoom(14)
+	elseif minzoom <= 15 and area>ZRES14^2 then MinZoom(15)
+	elseif minzoom <= 16 and area>ZRES15^2 then MinZoom(16)
+	elseif minzoom <= 17 and area>ZRES16^2 then MinZoom(17)
+	else                      MinZoom(18) end
 end
 
 -- Calculate POIs (typically rank 1-4 go to 'poi' z12-14, rank 5+ to 'poi_detail' z14)

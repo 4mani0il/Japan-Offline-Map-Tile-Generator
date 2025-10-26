@@ -24,10 +24,10 @@ for pbf_file in "$INPUT_DIR"/*.osm.pbf; do
     echo "-----------------------------------------------------"
     echo "Generating tiles: ${numeric_prefix} (source: ${base_name}.osm.pbf)..."
     
-    # Output with numeric prefix only (e.g., output_mbtiles/10.mbtiles)
-    output_mbtiles="$OUTPUT_DIR/${numeric_prefix}.mbtiles"
+    # Output with full name (e.g., output_mbtiles/10_Gunma.mbtiles)
+    output_mbtiles="$OUTPUT_DIR/${base_name}.mbtiles"
     
-    docker run \
+    sudo docker run \
         -e LANG=C.UTF-8 \
         -v "$(pwd)":/data "$DOCKER_IMAGE" \
         --input "/data/${pbf_file}" \
@@ -37,10 +37,7 @@ for pbf_file in "$INPUT_DIR"/*.osm.pbf; do
         --merge \
         --threads=1
     
-    # Rename to full name (e.g., 10_Gunma.mbtiles)
-    output_renamed="$OUTPUT_DIR/${base_name}.mbtiles"
-    mv "$output_mbtiles" "$output_renamed"
-    echo "Renamed to: ${output_renamed}"
+    echo "Generated: ${output_mbtiles}"
 done
 
 echo "-----------------------------------------------------"
