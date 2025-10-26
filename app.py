@@ -2,40 +2,45 @@
 import geopandas as gpd
 import os
 
-# 設定項目
+# Configuration
 GEOJSON_FILE = 'japan.geojson'
 OUTPUT_DIR = 'poly_files'
 BUFFER_METERS = 1000
-PREF_NAME_PROPERTY = 'nam_ja'
+PREF_NAME_PROPERTY = 'nam'
 PREF_CODE_PROPERTY = 'id'
 def create_poly_files():
-    print(f"🌍 GeoJSONファイル '{GEOJSON_FILE}' を読み込みます...")
+    print(f"Loading GeoJSON file '{GEOJSON_FILE}'...")
     if not os.path.exists(GEOJSON_FILE):
-        print(f"エラー: ファイルが見つかりません。'{GEOJSON_FILE}' を用意してください。")
+        print(f"Error: File not found. Please provide '{GEOJSON_FILE}'.")
         return
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    print(f"📂 出力先フォルダ: '{OUTPUT_DIR}'")
+    print(f"Output directory: '{OUTPUT_DIR}'")
 
     gdf = gpd.read_file(GEOJSON_FILE)
     projected_crs = 'EPSG:32654'
     geographic_crs = 'EPSG:4326'
     
-    print(f"⚙️  {len(gdf)} 件の都道府県データを処理します...")
+    print(f"Processing {len(gdf)} prefectures...")
 
     for index, row in gdf.iterrows():
         pref_name = row[PREF_NAME_PROPERTY]
+        # Remove administrative suffixes (Ken, Fu, To, Do)
+        pref_name_clean = pref_name.replace(' Ken', '').replace(' Fu', '').replace(' To', '').replace(' Do', '')
+        # Special case for Hokkaido
+        if pref_name_clean == 'Hokkai':
+            pref_name_clean = 'Hokkaido'
         pref_code = row[PREF_CODE_PROPERTY]
         geometry = row.geometry
-        file_basename = f"{pref_code}_{pref_name}"
+        file_basename = f"{pref_code}_{pref_name_clean}"
         
-        print(f"  -> {file_basename} を処理中...")
+        print(f"  Processing: {file_basename}...")
 
         geom_projected = gpd.GeoSeries([geometry], crs=geographic_crs).to_crs(projected_crs).iloc[0]
         geom_buffered = geom_projected.buffer(BUFFER_METERS)
         geom_final = gpd.GeoSeries([geom_buffered], crs=projected_crs).to_crs(geographic_crs).iloc[0]
 
-        # ポリゴンタイプに応じて処理
+        # Handle different polygon types
         if geom_final.geom_type == 'Polygon':
             polygons = [geom_final]
         elif geom_final.geom_type == 'MultiPolygon':
@@ -43,17 +48,17 @@ def create_poly_files():
         else:
             polygons = []
 
-        # 有効なポリゴン（頂点が4つ以上）だけをフィルタリング
+        # Filter valid polygons (with at least 4 vertices)
         valid_parts = []
         for p in polygons:
             if len(p.exterior.coords) >= 4:
                 valid_parts.append(p)
         
         if not valid_parts:
-            print(f"  -> 警告: {file_basename} に有効なポリゴン部分が見つかりませんでした。スキップします。")
+            print(f"  Warning: {file_basename} - no valid polygons found, skipping.")
             continue
 
-        # .polyファイルの中身を生成
+        # Generate .poly file content
         poly_content = f"{file_basename}\n"
         part_counter = 1
         for poly in valid_parts:
@@ -69,7 +74,7 @@ def create_poly_files():
         with open(output_filename, 'w', encoding='utf-8') as f:
             f.write(poly_content)
 
-    print(f"\n✅ 処理が完了しました。'{OUTPUT_DIR}' フォルダに {len(gdf)}個の.polyファイルを生成しました。")
+    print(f"\nCompleted: generated {len(gdf)} .poly files in '{OUTPUT_DIR}'.")
 
 
 if __name__ == '__main__':
