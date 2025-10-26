@@ -1,20 +1,17 @@
 {
-  "settings": {
-    "name": "Japan Ultra Light",
-    "version": "1.0",
-    "description": "A minimal, low-zoom basemap of Japan for app bundling.",
-    "attribution": "OpenStreetMap Contributors",
-
-    "minzoom": 0,
-    "maxzoom": 6,
-    "basezoom": 6,
-
-    "compress": "gzip",
-    "include_ids": false,
-    "simplify_level": 5
-  },
-  "layers": {
-    "water": { "minzoom": 0, "maxzoom": 6 },
-    "place": { "minzoom": 4, "maxzoom": 6 }
-  }
+	"layers": {
+		"water": { "minzoom": 0, "maxzoom": 10, "simplify_below": 8, "simplify_level": 0.5, "simplify_algorithm": "visvalingam" },
+		"place": { "minzoom": 0, "maxzoom": 10, "simplify_below": 8, "simplify_level": 0.3, "simplify_algorithm": "visvalingam" }
+	},
+	"settings": {
+		"minzoom": 0,
+		"maxzoom": 10,
+		"basezoom": 10,
+		"include_ids": false,
+		"name": "Japan Low Detail Map",
+		"version": "1.0",
+		"description": "Low detail map of Japan optimized for minimal file size",
+		"compress": "gzip",
+		"bounds": [122.0, 24.0, 146.0, 46.0]
+	}
 }

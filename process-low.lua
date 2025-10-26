@@ -1,74 +1,60 @@
 -- process-low.lua
--- 超軽量マップ専用の、最小限のLUAスクリプト (修正版 3)
+-- 低容量全国マップ専用の最小限のLUAスクリプト
+-- tilemaker v3.0.0対応版
 
-Layers = {}
-
-function setup_function()
-  Layers.water = Layer("water")
-  Layers.place = Layer("place")
-  SetAreaLayers(Layers.water)
+function init_function(name, is_first)
 end
 
--- 4. ノード（点）の処理
-function node_function(node)
-  -- ▼▼▼▼▼ ここを修正 ▼▼▼▼▼
-  -- 1. 'node'自体がnilでないか確認
-  if not node then
-    return
-  end
-  -- ▲▲▲▲▲ 修正ここまで ▲▲▲▲▲
+function exit_function()
+end
 
-  local tags = node:Tags()
-  
-  -- 'tags'がnilでないか、'tags.place'が存在するかを確認
-  if tags and tags.place then 
-    if tags.place == 'city' or 
-       tags.place == 'town' or 
-       tags.place == 'village' or 
-       tags.place == 'hamlet' or
-       tags.place == 'state' or
-       tags.place == 'country' then
-      Layers.place:AddPoint(node)
+function node_function()
+  local place = Find("place")
+  if place ~= "" then
+    local mz = 13
+    if place == "country" then
+      mz = 2
+    elseif place == "state" then
+      mz = 4
+    elseif place == "city" then
+      mz = 6
+    elseif place == "town" then
+      mz = 8
+    elseif place == "village" then
+      mz = 10
+    elseif place == "hamlet" then
+      mz = 10
+    end
+    
+    Layer("place", false)
+    Attribute("class", place)
+    MinZoom(mz)
+    local name = Find("name")
+    if name ~= "" then
+      Attribute("name", name)
     end
   end
 end
 
--- 5. ウェイ（線）の処理
-function way_function(way)
-  -- ▼▼▼▼▼ 念のため追加 ▼▼▼▼▼
-  if not way then
-    return
-  end
-  -- ▲▲▲▲▲ 追加ここまで ▲▲▲▲▲
-
-  local tags = way:Tags()
+function way_function()
+  local natural = Find("natural")
+  local waterway = Find("waterway")
   
-  if tags then
-    if tags.natural == 'water' or 
-       tags.waterway == 'riverbank' or 
-       tags.natural == 'coastline' then
-      Layers.water:AddPolygon(way)
-    end
+  if natural == "water" or waterway == "riverbank" or natural == "coastline" or waterway == "river" or waterway == "stream" then
+    Layer("water", false)
+    MinZoom(0)
   end
 end
 
--- 6. リレーション（関係）の処理
-function relation_function(relation)
-  -- ▼▼▼▼▼ 念のため追加 ▼▼▼▼▼
-  if not relation then
-    return
-  end
-  -- ▲▲▲▲▲ 追加ここまで ▲▲▲▲▲
-
-  local tags = relation:Tags()
+function relation_function()
+  local type = Find("type")
+  local natural = Find("natural")
+  local waterway = Find("waterway")
   
-  if tags then
-    if tags.type == 'multipolygon' then
-      if tags.natural == 'water' or 
-         tags.waterway == 'riverbank' or 
-         tags.natural == 'coastline' then
-        Layers.water:AddMultiPolygon(relation)
-      end
+  if type == "multipolygon" then
+    if natural == "water" or waterway == "riverbank" or natural == "coastline" or waterway == "river" or waterway == "stream" then
+      Layer("water", false)
+      MinZoom(0)
     end
   end
 end
