@@ -27,7 +27,7 @@ for pbf_file in "$INPUT_DIR"/*.osm.pbf; do
     # Output with full name (e.g., output_mbtiles/10_Gunma.mbtiles)
     output_mbtiles="$OUTPUT_DIR/${base_name}.mbtiles"
     
-    sudo docker run \
+    docker run \
         -e LANG=C.UTF-8 \
         -v "$(pwd)":/data "$DOCKER_IMAGE" \
         --input "/data/${pbf_file}" \

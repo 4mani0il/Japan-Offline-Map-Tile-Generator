@@ -15,7 +15,7 @@ It generates two types of vector tiles from OpenStreetMap data:
     pip install geopandas
     ```
 4.  **OSM Data:** Download `japan-latest.osm.pbf` from [Geofabrik](http://download.geofabrik.de/asia/japan.html) and place it in this directory.
-5.  **GeoJSON Data:** A `japan.geojson` file containing prefecture boundaries is required (used by `app.py`).
+5.  **GeoJSON Data:** A `japan.geojson` file containing prefecture boundaries is required (used by `create_polys.py`).
 
 ## Workflow
 
@@ -35,13 +35,13 @@ sudo docker run -e LANG=C.UTF-8 -v "$(pwd)":/data tilemaker \
 Run the scripts in the following order:
 
 #### 1. Generate Polygon Files
-This script (`app.py`) reads `japan.geojson` and generates the necessary boundary files (`.poly`) in the `poly_files/` directory.
+This script (`create_polys.py`) reads `japan.geojson` and generates the necessary boundary files (`.poly`) in the `poly_files/` directory.
 
 ```bash
-python app.py
+python create_polys.py
 ```
 
-**Configuration:** You can modify the overlap buffer in `app.py` by changing the `BUFFER_METERS` variable (default: 1000 meters).
+**Configuration:** You can modify the overlap buffer in `create_polys.py` by changing the `BUFFER_METERS` variable (default: 1000 meters).
 
 #### 2. Split PBF by Prefecture
 This script (`split_japan.sh`) uses osmium-tool and the poly_files/ to split japan-latest.osm.pbf into per-prefecture PBFs (e.g., 10_群馬県.osm.pbf). The results are saved in `output_pbf/`.
