@@ -84,6 +84,10 @@ function way_function()
     elseif l == "park" or l == "garden" then
         class = "park"
         mz_land = 10
+    elseif l == "" then
+      -- 陸地として扱う（閉じたポリゴンで属性がない場合）
+      class = "land"
+      mz_land = 0 -- z0から地面を表示
     end
 
     if class ~= "" then
