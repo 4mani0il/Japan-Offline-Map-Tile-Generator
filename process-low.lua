@@ -12,15 +12,15 @@ function node_function()
     local mz = 12 -- デフォルトを12にする
     
     if place == "country" then
-      mz = 0
+      mz = 2 -- z0からz2に変更（容量削減）
     elseif place == "state" then -- 都道府県
-      mz = 2
+      mz = 3 -- z2からz3に変更（容量削減）
     elseif place == "city" then
-      mz = 6 -- z6から市を表示
+      mz = 7 -- z6からz7に変更
     elseif place == "town" then
-      mz = 9 -- z9から町を表示
+      mz = 10 -- z9からz10に変更
     elseif place == "suburb" or place == "quarter" then
-      mz = 11 -- z11から地区名を表示
+      return -- 地区名は除外して容量削減
     else
       return
     end
@@ -63,7 +63,7 @@ function way_function()
     return
   end
   
-  -- 3. 地表 (植生、地形)
+  -- 3. 地表 (植生、地形) - 容量削減のため重要度の高いもののみ
   if is_closed then
     local l = natural
     if l == "" then l = leisure end
@@ -74,21 +74,16 @@ function way_function()
 
     if l == "wood" or l == "forest" then
       class = "wood"
-      mz_land = 8 -- z8から森林を表示
-    elseif l == "farmland" or l == "farm" or l == "meadow" then
+      mz_land = 9 -- z9から森林を表示（8から9に変更）
+    elseif l == "farmland" or l == "farm" then
       class = "farmland"
-      mz_land = 8 -- z8から農地を表示
-    elseif l == "bare_rock" or l == "scree" or l == "fell" then
-      class = "bare_rock"
-      mz_land = 9
-    elseif l == "park" or l == "garden" then
-        class = "park"
-        mz_land = 10
+      mz_land = 9 -- z9から農地を表示（8から9に変更）
     elseif l == "" then
       -- 陸地として扱う（閉じたポリゴンで属性がない場合）
       class = "land"
       mz_land = 0 -- z0から地面を表示
     end
+    -- meadow, park, bare_rock等は除外して容量削減
 
     if class ~= "" then
         Layer("landcover", true)
@@ -98,23 +93,21 @@ function way_function()
     end
   end
   
-  -- 4. 交通 (道路)
+  -- 4. 交通 (道路) - 容量削減のため主要道路のみ
   if highway ~= "" then
     local mz = 12 -- デフォルトはz12
     local h = highway
     
     if highway == "motorway" or highway == "trunk" then
-      mz = 2
-    elseif highway == "primary" then
       mz = 4
-    elseif highway == "secondary" then
+    elseif highway == "primary" then
       mz = 6
-    elseif highway == "tertiary" then
+    elseif highway == "secondary" then
       mz = 8
-    elseif highway == "residential" or highway == "unclassified" then
-      mz = 10 
+    elseif highway == "tertiary" then
+      mz = 10
     else
-      return
+      return -- residential/unclassifiedは除外
     end
     
     Layer("transportation", false)
@@ -126,15 +119,15 @@ end
 function relation_function()
   local type = Find("type")
   
-  -- 1. 行政界
+  -- 1. 行政界 - 容量削減のため国境と都道府県境のみ
   if type == "boundary" and Find("boundary") == "administrative" then
     local admin_level = Find("admin_level")
     local mz = 12
     
     if admin_level == "2" then -- 国境
-      mz = 0
+      mz = 2 -- z0からz2に変更
     elseif admin_level == "4" then -- 都道府県境
-      mz = 2
+      mz = 3 -- z2からz3に変更
     else
       return
     end
