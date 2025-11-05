@@ -4,6 +4,7 @@
 *.mbtiles
 *.pmtiles
 *.poly
+*.geojson
 
 __pycache__/
 *.py[cod]

@@ -19,7 +19,7 @@ You can generate tiles in either `.mbtiles` or `.pmtiles` format:
     pip install geopandas
     ```
 4.  **OSM Data:** Download `japan-latest.osm.pbf` from [Geofabrik](http://download.geofabrik.de/asia/japan.html) and place it in this directory.
-5.  **GeoJSON Data:** A `japan.geojson` file containing prefecture boundaries is required (used by `create_polys.py`).
+5.  **GeoJSON Data:** Download `japan.geojson` from [dataofjapan/land repository](https://raw.githubusercontent.com/dataofjapan/land/master/japan.geojson) and place it in this directory. This file contains prefecture boundaries and is used by `create_polys.py`.
 
 ## Workflow
 
