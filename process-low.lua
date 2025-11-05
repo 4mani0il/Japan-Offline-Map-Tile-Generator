@@ -143,3 +143,12 @@ function relation_function()
     ProcessWayMembers(way_function)
   end
 end
+
+-- 海の描画処理
+function attribute_function(attr, layer)
+  if layer == "ocean" then
+    return { class = "ocean" }
+  else
+    return attr
+  end
+end
