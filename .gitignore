@@ -2,6 +2,7 @@
 
 *.osm.pbf
 *.mbtiles
+*.pmtiles
 *.poly
 
 __pycache__/

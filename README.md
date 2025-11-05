@@ -3,8 +3,12 @@
 This is a personal project to create a self-hosted map tile pipeline for Japan. 
 
 It generates two types of vector tiles from OpenStreetMap data:
-1.  A single, low-resolution `.mbtiles` file for all of Japan (for app bundling).
-2.  High-resolution, per-prefecture `.mbtiles` files (to be served by an API).
+1.  A single, low-resolution tile file for all of Japan (for app bundling).
+2.  High-resolution, per-prefecture tile files (to be served by an API).
+
+You can generate tiles in either `.mbtiles` or `.pmtiles` format:
+- **mbtiles**: Use `generate_low_mbtiles.sh` and `generate_split_mbtiles.sh`
+- **pmtiles**: Use `generate_low_pmtiles.sh` and `generate_split_pmtiles.sh`
 
 ## Prerequisites
 
@@ -20,16 +24,21 @@ It generates two types of vector tiles from OpenStreetMap data:
 ## Workflow
 
 ### Low-Resolution Base Map
-Create a single, app-bundle-friendly base map using Docker command:
+Create a single, app-bundle-friendly base map using the helper script. The output will be written to `output/00-japan.mbtiles` or `output/00-japan.pmtiles` depending on the format you choose.
 
+**For mbtiles:**
 ```bash
-sudo docker run -e LANG=C.UTF-8 -v "$(pwd)":/data tilemaker \
-  --input /data/japan-latest.osm.pbf \
-  --output /data/tiles/japan-low.mbtiles \
-  --config /data/config-low.json \
-  --process /data/process-low.lua \
-  --threads=1
+./generate_low_mbtiles.sh
 ```
+
+**For pmtiles:**
+```bash
+./generate_low_pmtiles.sh
+```
+
+Requirements for this step:
+- `japan-latest.osm.pbf` is present in the project root
+- `config-low.json` and `process-low.lua` are available in the project root
 
 ### High-Resolution Prefecture Maps
 Run the scripts in the following order:
@@ -51,10 +60,16 @@ This script (`split_japan.sh`) uses osmium-tool and the poly_files/ to split jap
 ```
 
 #### 3. Generate High-Detail Prefecture Maps
-This script (`generate_splitdata.sh`) loops through all PBFs in `output_pbf/` and generates the high-detail tiles. The results are saved in `output_mbtiles/` with Japanese filenames (e.g., 10_群馬県.mbtiles).
+These scripts loop through all PBFs in `output_pbf/` and generate the high-detail tiles. The results are saved in `output/` with two-digit, zero-padded prefixes (e.g., `01_PrefectureName.mbtiles` or `01_PrefectureName.pmtiles`).
 
+**For mbtiles:**
 ```bash
-./generate_splitdata.sh
+./generate_split_mbtiles.sh
+```
+
+**For pmtiles:**
+```bash
+./generate_split_pmtiles.sh
 ```
 
 

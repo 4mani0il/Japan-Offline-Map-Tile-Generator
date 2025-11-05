@@ -6,7 +6,7 @@ set -e
 
 # Configuration
 INPUT_DIR="output_pbf"
-OUTPUT_DIR="output_mbtiles"
+OUTPUT_DIR="output"
 CONFIG_FILE="config-high.json"
 PROCESS_FILE="process.lua"
 DOCKER_IMAGE="tilemaker"
@@ -20,12 +20,20 @@ for pbf_file in "$INPUT_DIR"/*.osm.pbf; do
     base_name=$(basename "$pbf_file" .osm.pbf)
     # Extract numeric prefix (e.g., 10)
     numeric_prefix=$(echo "$base_name" | cut -d'_' -f1)
+    # Zero-pad numeric prefix to 2 digits (e.g., 1 -> 01)
+    padded_prefix=$(printf "%02d" "$numeric_prefix")
+    # Extract the remainder of the name after the first underscore
+    name_suffix=$(echo "$base_name" | cut -d'_' -f2-)
 
     echo "-----------------------------------------------------"
     echo "Generating tiles: ${numeric_prefix} (source: ${base_name}.osm.pbf)..."
     
-    # Output with full name (e.g., output_mbtiles/10_Gunma.mbtiles)
-    output_mbtiles="$OUTPUT_DIR/${base_name}.mbtiles"
+    # Output with zero-padded prefix (e.g., output/01_Gunma.mbtiles)
+    if [ -n "$name_suffix" ]; then
+        output_mbtiles="$OUTPUT_DIR/${padded_prefix}_${name_suffix}.mbtiles"
+    else
+        output_mbtiles="$OUTPUT_DIR/${padded_prefix}.mbtiles"
+    fi
     
     docker run \
         -e LANG=C.UTF-8 \
