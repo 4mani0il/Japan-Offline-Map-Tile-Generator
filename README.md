@@ -72,4 +72,6 @@ These scripts loop through all PBFs in `output_pbf/` and generate the high-detai
 ./generate_split_pmtiles.sh
 ```
 
+## License
+MIT License
 
