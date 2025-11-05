@@ -42,7 +42,6 @@ for pbf_file in "$INPUT_DIR"/*.osm.pbf; do
         --output "/data/${output_pmtiles}" \
         --config "/data/${CONFIG_FILE}" \
         --process "/data/${PROCESS_FILE}" \
-        --merge \
         --threads=1
     
     echo "Generated: ${output_pmtiles}"
