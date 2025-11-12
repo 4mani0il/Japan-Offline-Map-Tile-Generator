@@ -7,7 +7,7 @@ set -e
 # Configuration
 INPUT_PBF="japan-latest.osm.pbf"
 OUTPUT_DIR="output"
-OUTPUT_FILE="${OUTPUT_DIR}/00-japan.mbtiles"
+OUTPUT_FILE="${OUTPUT_DIR}/00_Japan.mbtiles"
 CONFIG_FILE="config-low.json"
 PROCESS_FILE="process-low.lua"
 DOCKER_IMAGE="tilemaker"
